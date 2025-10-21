@@ -28,15 +28,30 @@ export default function Toggle({ label, setting, description, className = '' }: 
     }
   }
 
-  const handleToggle = (e?: React.MouseEvent | React.TouchEvent) => {
-    e?.preventDefault()
-    e?.stopPropagation()
-    
+  const handleToggle = () => {
     switch (setting) {
       case 'sound': return toggleSound()
       case 'animations': return toggleAnimations()
       case 'contrast': return toggleContrast()
     }
+  }
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    handleToggle()
+  }
+
+  const handleTouch = (e: React.TouchEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    handleToggle()
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    handleToggle()
   }
 
   const isChecked = getValue()
@@ -55,8 +70,8 @@ export default function Toggle({ label, setting, description, className = '' }: 
       </div>
       <div 
         className="toggle-switch" 
-        onClick={handleToggle}
-        onTouchEnd={handleToggle}
+        onClick={handleClick}
+        onTouchEnd={handleTouch}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
@@ -69,7 +84,7 @@ export default function Toggle({ label, setting, description, className = '' }: 
         <input
           type="checkbox"
           checked={isChecked}
-          onChange={handleToggle}
+          onChange={handleChange}
           className="sr-only"
           aria-label={`${label} ${isChecked ? 'activé' : 'désactivé'}`}
         />

@@ -114,7 +114,7 @@ export default function GameCanvas() {
   }, [reduceAnimations])
 
   // Calculer les positions du panier selon l'appareil - Position contrôlée par l'utilisateur
-  const getBasketPosition = () => {
+  const getBasketPosition = useCallback(() => {
     const windowWidth = window.innerWidth
     const windowHeight = window.innerHeight
     
@@ -156,7 +156,7 @@ export default function GameCanvas() {
       rotation: basketAnimation.rotation,
       type: basketAnimation.type
     }
-  }
+  }, [deviceType, basketPosition.x, basketAnimation])
 
   // Détecter le type d'appareil
   useEffect(() => {
