@@ -118,22 +118,22 @@ export default function GameCanvas() {
     const windowWidth = window.innerWidth
     const windowHeight = window.innerHeight
     
-    // Taille du panier selon l'appareil - hauteur encore plus augmentée
+    // Taille du panier selon l'appareil - optimisé pour mobile
     let basketWidth, basketHeight, baseY
     switch (deviceType) {
       case 'mobile':
-        basketWidth = windowWidth * 0.15
-        basketHeight = windowHeight * 0.15  // Augmenté de 0.12 à 0.15
+        basketWidth = windowWidth * 0.18  // Augmenté pour mobile
+        basketHeight = windowHeight * 0.10  // Réduit la hauteur pour mobile
         baseY = windowHeight * 0.85
         break
       case 'tablet':
         basketWidth = windowWidth * 0.12
-        basketHeight = windowHeight * 0.12  // Augmenté de 0.10 à 0.12
+        basketHeight = windowHeight * 0.12
         baseY = windowHeight * 0.88
         break
       default: // desktop
         basketWidth = windowWidth * 0.1
-        basketHeight = windowHeight * 0.10  // Augmenté de 0.08 à 0.10
+        basketHeight = windowHeight * 0.10
         baseY = windowHeight * 0.9
         break
     }
@@ -334,7 +334,9 @@ export default function GameCanvas() {
       
       const entityX = entity.x * canvas.width
       const entityY = entity.y * canvas.height
-      const entitySize = entity.size * canvas.width
+      // Taille des objets ajustée selon l'appareil
+      const sizeMultiplier = deviceType === 'mobile' ? 1.3 : deviceType === 'tablet' ? 1.1 : 1.0
+      const entitySize = entity.size * canvas.width * sizeMultiplier
       
       // Vérifier la collision avec le panier
       const distance = Math.sqrt(
@@ -376,7 +378,9 @@ export default function GameCanvas() {
       
       const x = entity.x * canvas.width
       const y = entity.y * canvas.height
-      const size = entity.size * canvas.width
+      // Taille des objets ajustée selon l'appareil
+      const sizeMultiplier = deviceType === 'mobile' ? 1.3 : deviceType === 'tablet' ? 1.1 : 1.0
+      const size = entity.size * canvas.width * sizeMultiplier
       
       // Sauvegarder le contexte
       ctx.save()
@@ -496,14 +500,97 @@ export default function GameCanvas() {
     ctx.arc(canvas.width/2, canvas.height/2, 5, 0, Math.PI * 2)
     ctx.fill()
 
-  // Dessiner le HUD
-    ctx.fillStyle = '#FFFFFF'
-    const hudFontSize = deviceType === 'mobile' ? 28 : deviceType === 'tablet' ? 26 : 24
-    ctx.font = `bold ${hudFontSize}px Arial`
-    ctx.fillText(`Score: ${score}`, 20, 30)
+  // Dessiner le HUD amélioré
+    const hudPadding = deviceType === 'mobile' ? 20 : deviceType === 'tablet' ? 16 : 12
+    const hudFontSize = deviceType === 'mobile' ? 32 : deviceType === 'tablet' ? 28 : 24
+    const hudSmallFontSize = deviceType === 'mobile' ? 20 : deviceType === 'tablet' ? 18 : 16
     
+    // Dessiner le fond du score avec effet de glassmorphism
+    const scoreX = hudPadding
+    const scoreY = hudPadding
+    const scoreWidth = deviceType === 'mobile' ? 180 : deviceType === 'tablet' ? 160 : 140
+    const scoreHeight = deviceType === 'mobile' ? 80 : deviceType === 'tablet' ? 70 : 60
+    
+    // Fond avec gradient et transparence
+    const scoreGradient = ctx.createLinearGradient(scoreX, scoreY, scoreX, scoreY + scoreHeight)
+    scoreGradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)')
+    scoreGradient.addColorStop(1, 'rgba(255, 255, 255, 0.1)')
+    
+    ctx.fillStyle = scoreGradient
+    ctx.fillRect(scoreX, scoreY, scoreWidth, scoreHeight)
+    
+    // Bordure avec effet de brillance
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
+    ctx.lineWidth = 2
+    ctx.strokeRect(scoreX, scoreY, scoreWidth, scoreHeight)
+    
+    // Ombre portée
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)'
+    ctx.shadowBlur = 10
+    ctx.shadowOffsetX = 2
+    ctx.shadowOffsetY = 2
+    
+    // Texte "SCORE" avec style moderne
+    ctx.fillStyle = '#FFFFFF'
+    ctx.font = `bold ${hudSmallFontSize}px Arial`
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'top'
+    ctx.fillText('SCORE', scoreX + 15, scoreY + 8)
+    
+    // Valeur du score avec effet de brillance
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
+    ctx.shadowBlur = 5
+    ctx.shadowOffsetX = 1
+    ctx.shadowOffsetY = 1
+    
+    ctx.fillStyle = '#4CAF50' // Vert pour le score
+    ctx.font = `bold ${hudFontSize}px Arial`
+    ctx.fillText(score.toString(), scoreX + 15, scoreY + 25)
+    
+    // Reset des ombres
+    ctx.shadowColor = 'transparent'
+    ctx.shadowBlur = 0
+    ctx.shadowOffsetX = 0
+    ctx.shadowOffsetY = 0
+    
+    // Dessiner le timer avec style moderne
+    const timerX = canvas.width - hudPadding - (deviceType === 'mobile' ? 120 : deviceType === 'tablet' ? 100 : 80)
+    const timerY = hudPadding
+    const timerWidth = deviceType === 'mobile' ? 100 : deviceType === 'tablet' ? 90 : 80
+    const timerHeight = deviceType === 'mobile' ? 80 : deviceType === 'tablet' ? 70 : 60
+    
+    // Fond du timer avec gradient rouge/orange
+    const timerGradient = ctx.createLinearGradient(timerX, timerY, timerX, timerY + timerHeight)
     const seconds = Math.ceil(timeLeft / 1000)
-    ctx.fillText(`${seconds}s`, canvas.width - 60, 30)
+    const timeColor = seconds <= 5 ? 'rgba(255, 0, 0, 0.3)' : seconds <= 10 ? 'rgba(255, 165, 0, 0.3)' : 'rgba(0, 150, 255, 0.3)'
+    timerGradient.addColorStop(0, timeColor)
+    timerGradient.addColorStop(1, 'rgba(255, 255, 255, 0.1)')
+    
+    ctx.fillStyle = timerGradient
+    ctx.fillRect(timerX, timerY, timerWidth, timerHeight)
+    
+    // Bordure du timer
+    ctx.strokeStyle = seconds <= 5 ? 'rgba(255, 0, 0, 0.5)' : seconds <= 10 ? 'rgba(255, 165, 0, 0.5)' : 'rgba(0, 150, 255, 0.5)'
+    ctx.lineWidth = 2
+    ctx.strokeRect(timerX, timerY, timerWidth, timerHeight)
+    
+    // Texte "TIME" 
+    ctx.fillStyle = '#FFFFFF'
+    ctx.font = `bold ${hudSmallFontSize}px Arial`
+    ctx.textAlign = 'left'
+    ctx.fillText('TIME', timerX + 15, timerY + 8)
+    
+    // Valeur du temps avec couleur dynamique
+    ctx.fillStyle = seconds <= 5 ? '#FF4444' : seconds <= 10 ? '#FFA500' : '#0096FF'
+    ctx.font = `bold ${hudFontSize}px Arial`
+    ctx.fillText(`${seconds}s`, timerX + 15, timerY + 25)
+    
+    // Effet de pulsation pour le temps critique
+    if (seconds <= 5) {
+      const pulseIntensity = Math.sin(Date.now() * 0.01) * 0.3 + 0.7
+      ctx.fillStyle = `rgba(255, 0, 0, ${pulseIntensity * 0.3})`
+      ctx.fillRect(timerX, timerY, timerWidth, timerHeight)
+    }
 
     // Continuer la boucle
     if (phase === 'playing') {

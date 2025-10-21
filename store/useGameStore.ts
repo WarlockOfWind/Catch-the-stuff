@@ -230,7 +230,7 @@ export const useGameStore = create<GameState>((set, get) => ({
           type: itemType,
           x: baseX,
           y: -0.1,
-          size: 0.04,
+          size: 0.06, // Augmenté de 0.04 à 0.06 pour tous les appareils
           // Propriétés d'animation
           baseX: baseX,
           oscillationPhase: Math.random() * Math.PI * 2, // Phase aléatoire
