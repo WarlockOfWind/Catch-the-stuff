@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Catch the Stuff - Prompt Consulting',
+  title: 'Catch the Stuff - PromptConsulting',
   description: 'Attrapez les clients et évitez les distractions dans ce mini-jeu interactif',
   manifest: '/manifest.json',
   icons: {

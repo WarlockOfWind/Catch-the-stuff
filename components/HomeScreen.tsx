@@ -14,12 +14,12 @@ export default function HomeScreen() {
   return (
     <div className={`game-container ${highContrast ? 'high-contrast' : ''}`}>
       <div className="flex flex-col items-center justify-center min-h-screen p-6 max-w-md mx-auto">
-        {/* Logo Prompt Consulting */}
+        {/* Logo PromptConsulting */}
         <div className="mb-8 text-center">
           <div className="mb-6">
             <Image 
               src="/logo.png" 
-              alt="Catch the Stuff - Prompt Consulting" 
+              alt="Catch the Stuff - PromptConsulting" 
               width={192}
               height={192}
               className="w-48 h-auto mx-auto"
@@ -27,7 +27,7 @@ export default function HomeScreen() {
             />
           </div>
           <h1 className="text-3xl font-bold text-prompt-orange mb-2">
-            Prompt Consulting
+            PromptConsulting
           </h1>
           <div className="w-16 h-1 bg-prompt-orange mx-auto mb-4"></div>
         </div>

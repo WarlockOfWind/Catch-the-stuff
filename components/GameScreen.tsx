@@ -73,14 +73,14 @@ export default function GameScreen() {
             onClick={() => window.location.href = 'https://promptconsulting.fr/?utm_source=qr-card&utm_campaign=bcv2025'}
             className="btn-primary w-full text-lg py-4 focus:outline-none focus:ring-4 focus:ring-prompt-orange focus:ring-opacity-50"
           >
-            🚀 Découvrir Prompt Consulting
+            Découvrir PromptConsulting
           </button>
           
           <button
             onClick={reset}
             className="btn-secondary w-full py-3 focus:outline-none focus:ring-4 focus:ring-gray-500 focus:ring-opacity-50"
           >
-            🔄 Rejouer
+            Rejouer
           </button>
         </div>
 
