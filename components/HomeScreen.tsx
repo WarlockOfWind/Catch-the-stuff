@@ -14,8 +14,21 @@ export default function HomeScreen() {
   return (
     <div className={`game-container ${highContrast ? 'high-contrast' : ''}`}>
       <div className="flex flex-col items-center justify-center min-h-screen p-6 max-w-md mx-auto">
-        {/* Logo PromptConsulting */}
+        {/* Logos PromptConsulting et Catch the Stuff */}
         <div className="mb-8 text-center">
+          {/* Logo PromptConsulting - Plus petit en haut */}
+          <div className="mb-4">
+            <Image 
+              src="/logo.webp" 
+              alt="PromptConsulting" 
+              width={100}
+              height={50}
+              className="w-24 h-auto mx-auto opacity-90"
+              priority
+            />
+          </div>
+          
+          {/* Logo Catch the Stuff - Principal */}
           <div className="mb-6">
             <Image 
               src="/logo.png" 
@@ -26,6 +39,7 @@ export default function HomeScreen() {
               priority
             />
           </div>
+          
           <h1 className="text-3xl font-bold text-prompt-orange mb-2">
             PromptConsulting
           </h1>
