@@ -500,52 +500,61 @@ export default function GameCanvas() {
     ctx.arc(canvas.width/2, canvas.height/2, 5, 0, Math.PI * 2)
     ctx.fill()
 
-  // Dessiner le HUD amélioré
+  // Dessiner le HUD amélioré avec style Prompt Consulting
     const hudPadding = deviceType === 'mobile' ? 20 : deviceType === 'tablet' ? 16 : 12
     const hudFontSize = deviceType === 'mobile' ? 32 : deviceType === 'tablet' ? 28 : 24
     const hudSmallFontSize = deviceType === 'mobile' ? 20 : deviceType === 'tablet' ? 18 : 16
     
-    // Dessiner le fond du score avec effet de glassmorphism
+    // Dessiner le fond du score avec style Prompt Consulting
     const scoreX = hudPadding
     const scoreY = hudPadding
-    const scoreWidth = deviceType === 'mobile' ? 180 : deviceType === 'tablet' ? 160 : 140
-    const scoreHeight = deviceType === 'mobile' ? 80 : deviceType === 'tablet' ? 70 : 60
+    const scoreWidth = deviceType === 'mobile' ? 200 : deviceType === 'tablet' ? 180 : 160
+    const scoreHeight = deviceType === 'mobile' ? 90 : deviceType === 'tablet' ? 80 : 70
     
-    // Fond avec gradient et transparence
+    // Fond avec gradient Prompt Consulting
     const scoreGradient = ctx.createLinearGradient(scoreX, scoreY, scoreX, scoreY + scoreHeight)
-    scoreGradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)')
-    scoreGradient.addColorStop(1, 'rgba(255, 255, 255, 0.1)')
+    scoreGradient.addColorStop(0, 'rgba(45, 45, 45, 0.9)') // prompt-gray avec transparence
+    scoreGradient.addColorStop(0.5, 'rgba(26, 26, 26, 0.8)') // prompt-dark
+    scoreGradient.addColorStop(1, 'rgba(45, 45, 45, 0.7)')
     
     ctx.fillStyle = scoreGradient
     ctx.fillRect(scoreX, scoreY, scoreWidth, scoreHeight)
     
-    // Bordure avec effet de brillance
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
-    ctx.lineWidth = 2
+    // Bordure avec couleur Prompt Consulting
+    ctx.strokeStyle = '#FF6B35' // prompt-orange
+    ctx.lineWidth = 3
     ctx.strokeRect(scoreX, scoreY, scoreWidth, scoreHeight)
     
-    // Ombre portée
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)'
-    ctx.shadowBlur = 10
-    ctx.shadowOffsetX = 2
-    ctx.shadowOffsetY = 2
+    // Ligne décorative comme dans HomeScreen
+    const lineY = scoreY + scoreHeight - 8
+    ctx.fillStyle = '#FF6B35'
+    ctx.fillRect(scoreX + 15, lineY, scoreWidth - 30, 3)
     
-    // Texte "SCORE" avec style moderne
-    ctx.fillStyle = '#FFFFFF'
-    ctx.font = `bold ${hudSmallFontSize}px Arial`
+    // Icône de score (étoile)
+    const iconSize = deviceType === 'mobile' ? 24 : deviceType === 'tablet' ? 22 : 20
+    const iconX = scoreX + 15
+    const iconY = scoreY + 12
+    
+    ctx.fillStyle = '#FF6B35'
+    ctx.font = `${iconSize}px Arial`
     ctx.textAlign = 'left'
     ctx.textBaseline = 'top'
-    ctx.fillText('SCORE', scoreX + 15, scoreY + 8)
+    ctx.fillText('⭐', iconX, iconY)
     
-    // Valeur du score avec effet de brillance
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
-    ctx.shadowBlur = 5
-    ctx.shadowOffsetX = 1
-    ctx.shadowOffsetY = 1
+    // Texte "SCORE" avec style Prompt Consulting
+    ctx.fillStyle = '#FFFFFF'
+    ctx.font = `bold ${hudSmallFontSize}px Inter, Arial`
+    ctx.fillText('SCORE', iconX + iconSize + 8, iconY + 2)
     
-    ctx.fillStyle = '#4CAF50' // Vert pour le score
-    ctx.font = `bold ${hudFontSize}px Arial`
-    ctx.fillText(score.toString(), scoreX + 15, scoreY + 25)
+    // Valeur du score avec couleur Prompt Consulting et effet de brillance
+    ctx.shadowColor = 'rgba(255, 107, 53, 0.5)'
+    ctx.shadowBlur = 8
+    ctx.shadowOffsetX = 0
+    ctx.shadowOffsetY = 0
+    
+    ctx.fillStyle = '#FF6B35' // prompt-orange
+    ctx.font = `bold ${hudFontSize}px Inter, Arial`
+    ctx.fillText(score.toString(), scoreX + 15, scoreY + 35)
     
     // Reset des ombres
     ctx.shadowColor = 'transparent'
@@ -553,42 +562,70 @@ export default function GameCanvas() {
     ctx.shadowOffsetX = 0
     ctx.shadowOffsetY = 0
     
-    // Dessiner le timer avec style moderne
-    const timerX = canvas.width - hudPadding - (deviceType === 'mobile' ? 120 : deviceType === 'tablet' ? 100 : 80)
+    // Dessiner le timer avec style Prompt Consulting
+    const timerX = canvas.width - hudPadding - (deviceType === 'mobile' ? 140 : deviceType === 'tablet' ? 120 : 100)
     const timerY = hudPadding
-    const timerWidth = deviceType === 'mobile' ? 100 : deviceType === 'tablet' ? 90 : 80
-    const timerHeight = deviceType === 'mobile' ? 80 : deviceType === 'tablet' ? 70 : 60
+    const timerWidth = deviceType === 'mobile' ? 120 : deviceType === 'tablet' ? 110 : 100
+    const timerHeight = deviceType === 'mobile' ? 90 : deviceType === 'tablet' ? 80 : 70
     
-    // Fond du timer avec gradient rouge/orange
+    // Fond du timer avec gradient dynamique
     const timerGradient = ctx.createLinearGradient(timerX, timerY, timerX, timerY + timerHeight)
     const seconds = Math.ceil(timeLeft / 1000)
-    const timeColor = seconds <= 5 ? 'rgba(255, 0, 0, 0.3)' : seconds <= 10 ? 'rgba(255, 165, 0, 0.3)' : 'rgba(0, 150, 255, 0.3)'
-    timerGradient.addColorStop(0, timeColor)
-    timerGradient.addColorStop(1, 'rgba(255, 255, 255, 0.1)')
+    let timeColor, timeBorderColor, timeTextColor
+    
+    if (seconds <= 5) {
+      timeColor = 'rgba(255, 0, 0, 0.3)'
+      timeBorderColor = '#FF4444'
+      timeTextColor = '#FF4444'
+    } else if (seconds <= 10) {
+      timeColor = 'rgba(255, 165, 0, 0.3)'
+      timeBorderColor = '#FFA500'
+      timeTextColor = '#FFA500'
+    } else {
+      timeColor = 'rgba(255, 107, 53, 0.3)' // prompt-orange
+      timeBorderColor = '#FF6B35'
+      timeTextColor = '#FF6B35'
+    }
+    
+    timerGradient.addColorStop(0, 'rgba(45, 45, 45, 0.9)')
+    timerGradient.addColorStop(0.5, timeColor)
+    timerGradient.addColorStop(1, 'rgba(26, 26, 26, 0.8)')
     
     ctx.fillStyle = timerGradient
     ctx.fillRect(timerX, timerY, timerWidth, timerHeight)
     
-    // Bordure du timer
-    ctx.strokeStyle = seconds <= 5 ? 'rgba(255, 0, 0, 0.5)' : seconds <= 10 ? 'rgba(255, 165, 0, 0.5)' : 'rgba(0, 150, 255, 0.5)'
-    ctx.lineWidth = 2
+    // Bordure du timer avec couleur dynamique
+    ctx.strokeStyle = timeBorderColor
+    ctx.lineWidth = 3
     ctx.strokeRect(timerX, timerY, timerWidth, timerHeight)
+    
+    // Ligne décorative
+    ctx.fillStyle = timeBorderColor
+    ctx.fillRect(timerX + 15, timerY + timerHeight - 8, timerWidth - 30, 3)
+    
+    // Icône de temps (horloge)
+    const timerIconSize = deviceType === 'mobile' ? 24 : deviceType === 'tablet' ? 22 : 20
+    const timerIconX = timerX + 15
+    const timerIconY = timerY + 12
+    
+    ctx.fillStyle = timeTextColor
+    ctx.font = `${timerIconSize}px Arial`
+    ctx.fillText('⏱️', timerIconX, timerIconY)
     
     // Texte "TIME" 
     ctx.fillStyle = '#FFFFFF'
-    ctx.font = `bold ${hudSmallFontSize}px Arial`
-    ctx.textAlign = 'left'
-    ctx.fillText('TIME', timerX + 15, timerY + 8)
+    ctx.font = `bold ${hudSmallFontSize}px Inter, Arial`
+    ctx.fillText('TIME', timerIconX + timerIconSize + 8, timerIconY + 2)
     
     // Valeur du temps avec couleur dynamique
-    ctx.fillStyle = seconds <= 5 ? '#FF4444' : seconds <= 10 ? '#FFA500' : '#0096FF'
-    ctx.font = `bold ${hudFontSize}px Arial`
-    ctx.fillText(`${seconds}s`, timerX + 15, timerY + 25)
+    ctx.fillStyle = timeTextColor
+    ctx.font = `bold ${hudFontSize}px Inter, Arial`
+    ctx.fillText(`${seconds}s`, timerX + 15, timerY + 35)
     
     // Effet de pulsation pour le temps critique
     if (seconds <= 5) {
       const pulseIntensity = Math.sin(Date.now() * 0.01) * 0.3 + 0.7
-      ctx.fillStyle = `rgba(255, 0, 0, ${pulseIntensity * 0.3})`
+      ctx.fillStyle = `rgba(255, 0, 0, ${pulseIntensity * 0.2})`
       ctx.fillRect(timerX, timerY, timerWidth, timerHeight)
     }
 
