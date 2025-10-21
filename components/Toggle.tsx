@@ -28,7 +28,10 @@ export default function Toggle({ label, setting, description, className = '' }: 
     }
   }
 
-  const handleToggle = () => {
+  const handleToggle = (e?: React.MouseEvent | React.TouchEvent) => {
+    e?.preventDefault()
+    e?.stopPropagation()
+    
     switch (setting) {
       case 'sound': return toggleSound()
       case 'animations': return toggleAnimations()
@@ -50,7 +53,19 @@ export default function Toggle({ label, setting, description, className = '' }: 
           </span>
         )}
       </div>
-      <div className="toggle-switch">
+      <div 
+        className="toggle-switch" 
+        onClick={handleToggle}
+        onTouchEnd={handleToggle}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            handleToggle()
+          }
+        }}
+      >
         <input
           type="checkbox"
           checked={isChecked}
