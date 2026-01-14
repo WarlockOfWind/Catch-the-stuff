@@ -225,7 +225,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       
       // Calculer le temps écoulé depuis le début de la partie
       const elapsedTime = 18000 - newTimeLeft
-      const canSpawnComputer = elapsedTime >= 8000 // Ordinateurs seulement après 8 secondes
+      const canSpawnComputer = elapsedTime >= 4000 // Ordinateurs seulement après 4 secondes
       
       // Augmenter le taux de spawn pour que les objets apparaissent plus tôt
       if (Math.random() < 0.05) {
