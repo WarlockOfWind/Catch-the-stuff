@@ -51,6 +51,9 @@ export default function HomeScreen() {
           <p className="text-lg text-gray-300 mb-4">
             Attrapez les <span className="text-green-400 font-semibold">objets</span> et évitez les <span className="text-red-400 font-semibold">bombes</span>
           </p>
+          <p className="text-sm text-gray-400 mb-2">
+            Attrapez un <span className="text-blue-400 font-semibold">ordinateur</span> pour découvrir notre site
+          </p>
           <p className="text-sm text-gray-400">
             Utilisez les flèches du clavier, la souris ou glissez votre doigt
           </p>
