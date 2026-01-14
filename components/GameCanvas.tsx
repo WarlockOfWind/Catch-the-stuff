@@ -179,9 +179,34 @@ export default function GameCanvas() {
   // Charger les images
   useEffect(() => {
     const loadImages = async () => {
+      // Charger Teams.png et le convertir en base64 pour l'injecter dans le SVG
+      const teamsImagePromise = new Promise<string>((resolve, reject) => {
+        const img = new Image()
+        img.crossOrigin = 'anonymous'
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas')
+            canvas.width = img.width
+            canvas.height = img.height
+            const ctx = canvas.getContext('2d')
+            if (ctx) {
+              ctx.drawImage(img, 0, 0)
+              const dataUrl = canvas.toDataURL('image/png')
+              resolve(dataUrl)
+            } else {
+              reject(new Error('Could not get canvas context'))
+            }
+          } catch (error) {
+            reject(error)
+          }
+        }
+        img.onerror = () => reject(new Error('Failed to load Teams.png'))
+        img.src = '/Teams.png'
+      })
+
       const imageTypes = [
         'client', 'coffee', 'pizza', 'lemon', 'pear', 'pineapple', 
-        'plum', 'champagne', 'computer', 'flower', 'bomb'
+        'plum', 'champagne', 'flower', 'bomb'
       ]
       
       const loadPromises = imageTypes.map(type => 
@@ -194,18 +219,57 @@ export default function GameCanvas() {
           img.src = `/${type}.svg`
         })
       )
+
+      // Charger le SVG de l'ordinateur avec Teams.png injecté
+      const computerImagePromise = teamsImagePromise.then(teamsDataUrl => {
+        return new Promise<void>((resolve) => {
+          fetch('/computer.svg')
+            .then(response => response.text())
+            .then(svgText => {
+              // Remplacer la référence à Teams.png par le data URI
+              const modifiedSvg = svgText.replace(
+                'href="/Teams.png"',
+                `href="${teamsDataUrl}"`
+              )
+              // Créer un blob URL pour le SVG modifié
+              const blob = new Blob([modifiedSvg], { type: 'image/svg+xml' })
+              const url = URL.createObjectURL(blob)
+              
+              const img = new Image()
+              img.onload = () => {
+                setImages(prev => ({ ...prev, computer: img }))
+                URL.revokeObjectURL(url)
+                resolve()
+              }
+              img.onerror = () => {
+                URL.revokeObjectURL(url)
+                resolve() // Continuer même en cas d'erreur
+              }
+              img.src = url
+            })
+            .catch(() => {
+              // Fallback : charger le SVG original si l'injection échoue
+              const img = new Image()
+              img.onload = () => {
+                setImages(prev => ({ ...prev, computer: img }))
+                resolve()
+              }
+              img.src = '/computer.svg'
+            })
+        })
+      })
       
       // Charger l'image du panier séparément
       const basketImg = new Image()
       const basketPromise = new Promise<void>((resolve) => {
-    basketImg.onload = () => {
-      setBasketImage(basketImg)
+        basketImg.onload = () => {
+          setBasketImage(basketImg)
           resolve()
-    }
-    basketImg.src = '/basket.svg'
+        }
+        basketImg.src = '/basket.svg'
       })
     
-      await Promise.all([...loadPromises, basketPromise])
+      await Promise.all([...loadPromises, computerImagePromise, basketPromise])
       setImagesLoaded(true)
     }
     
