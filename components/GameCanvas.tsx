@@ -389,33 +389,7 @@ export default function GameCanvas() {
       ctx.translate(x, y)
       ctx.rotate(entity.rotation)
       
-      if (entity.type === 'bomb') {
-        // Effet spécial pour les bombes
-        const time = Date.now() / 200 // Vitesse de clignotement
-        const blinkIntensity = Math.abs(Math.sin(time)) * 0.5 + 0.5
-        
-        // Effet de particules autour de la bombe
-    ctx.save()
-        for (let i = 0; i < 8; i++) {
-          const angle = (i / 8) * Math.PI * 2 + time * 0.5
-          const radius = size * 0.8 + Math.sin(time * 2 + i) * size * 0.2
-          const particleX = Math.cos(angle) * radius
-          const particleY = Math.sin(angle) * radius
-          
-          ctx.fillStyle = `rgba(255, 0, 0, ${blinkIntensity * 0.6})`
-      ctx.beginPath()
-          ctx.arc(particleX, particleY, size * 0.05, 0, Math.PI * 2)
-      ctx.fill()
-    }
-        ctx.restore()
-        
-        // Appliquer l'effet de clignotement rouge
-        ctx.globalCompositeOperation = 'multiply'
-        ctx.fillStyle = `rgba(255, 0, 0, ${blinkIntensity * 0.3})`
-        ctx.fillRect(-size / 2, -size / 2, size, size)
-        ctx.globalCompositeOperation = 'source-over'
-      }
-      
+      // Dessiner l'image d'abord (pour toutes les entités)
       if (images[entity.type] && imagesLoaded) {
         // Dessiner l'image avec rotation
         ctx.drawImage(
@@ -425,13 +399,43 @@ export default function GameCanvas() {
           size,
           size
         )
-    } else {
+      } else {
         // Fallback : dessiner des cercles si les images ne sont pas chargées
         const goodItems = ['client', 'coffee', 'pizza', 'lemon', 'pear', 'pineapple', 'plum', 'champagne', 'computer', 'flower']
         ctx.fillStyle = goodItems.includes(entity.type) ? '#4CAF50' : '#F44336'
-    ctx.beginPath()
+        ctx.beginPath()
         ctx.arc(0, 0, size / 2, 0, Math.PI * 2)
-    ctx.fill()
+        ctx.fill()
+      }
+      
+      // Effet spécial pour les bombes (appliqué APRÈS l'image)
+      if (entity.type === 'bomb') {
+        const time = Date.now() / 200 // Vitesse de clignotement
+        const blinkIntensity = Math.abs(Math.sin(time)) * 0.5 + 0.5
+        
+        // Effet de particules autour de la bombe
+        ctx.save()
+        for (let i = 0; i < 8; i++) {
+          const angle = (i / 8) * Math.PI * 2 + time * 0.5
+          const radius = size * 0.8 + Math.sin(time * 2 + i) * size * 0.2
+          const particleX = Math.cos(angle) * radius
+          const particleY = Math.sin(angle) * radius
+          
+          ctx.fillStyle = `rgba(255, 0, 0, ${blinkIntensity * 0.6})`
+          ctx.beginPath()
+          ctx.arc(particleX, particleY, size * 0.05, 0, Math.PI * 2)
+          ctx.fill()
+        }
+        ctx.restore()
+        
+        // Appliquer l'effet de clignotement rouge uniquement sur les pixels existants
+        // Utiliser 'overlay' pour éviter de colorer le fond transparent tout en gardant l'effet de clignotement
+        if (images[entity.type] && imagesLoaded) {
+          ctx.globalCompositeOperation = 'overlay'
+          ctx.fillStyle = `rgba(255, 0, 0, ${blinkIntensity * 0.25})`
+          ctx.fillRect(-size / 2, -size / 2, size, size)
+          ctx.globalCompositeOperation = 'source-over'
+        }
       }
       
       // Restaurer le contexte
