@@ -72,7 +72,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   // État initial
   phase: 'idle',
   score: 0,
-  timeLeft: 30000, // 30 secondes
+  timeLeft: 18000, // 18 secondes
   countdownTime: 3000, // 3 secondes de countdown
   entities: [],
   player: {
@@ -93,7 +93,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     set({
       phase: 'countdown',
       score: 0,
-      timeLeft: 30000,
+      timeLeft: 18000,
       entities: [],
       player: {
         x: 0.5,
@@ -111,7 +111,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     set({
       phase: 'idle',
       score: 0,
-      timeLeft: 30000,
+      timeLeft: 18000,
       entities: [],
       player: {
         x: 0.5,
@@ -135,6 +135,18 @@ export const useGameStore = create<GameState>((set, get) => ({
     if (!entity || entity.collected) return
 
     const goodItems: GoodItemType[] = ['client', 'coffee', 'pizza', 'lemon', 'pear', 'pineapple', 'plum', 'champagne', 'computer', 'flower']
+    
+    // Si c'est un ordinateur, rediriger vers le site
+    if (entity.type === 'computer') {
+      set(state => ({
+        entities: state.entities.map(e => 
+          e.id === entityId ? { ...e, collected: true } : e
+        )
+      }))
+      // Redirection vers le site PromptConsulting
+      window.location.href = 'https://promptconsulting.fr/?utm_source=qr-card&utm_campaign=bcv2025'
+      return
+    }
     
     if (goodItems.includes(entity.type as GoodItemType)) {
       // Objet positif collecté
@@ -211,19 +223,34 @@ export const useGameStore = create<GameState>((set, get) => ({
       // Générer de nouvelles entités
       const newEntities = [...state.entities]
       
-      // Ajouter une entité moins fréquemment
-      if (Math.random() < 0.03) {
+      // Calculer le temps écoulé depuis le début de la partie
+      const elapsedTime = 18000 - newTimeLeft
+      const canSpawnComputer = elapsedTime >= 8000 // Ordinateurs seulement après 8 secondes
+      
+      // Augmenter le taux de spawn pour que les objets apparaissent plus tôt
+      if (Math.random() < 0.05) {
         const baseX = Math.random() * 0.8 + 0.1
         
         // Définir les types d'objets positifs et négatifs
-        const goodItems: GoodItemType[] = ['client', 'coffee', 'pizza', 'lemon', 'pear', 'pineapple', 'plum', 'champagne', 'computer', 'flower']
+        const goodItems: GoodItemType[] = ['client', 'coffee', 'pizza', 'lemon', 'pear', 'pineapple', 'plum', 'champagne', 'flower']
+        const computerItems: GoodItemType[] = ['computer']
         const badItems: BadItemType[] = ['bomb']
         
         // 80% de chance d'avoir un objet positif, 20% de chance d'avoir une bombe
         const isGoodItem = Math.random() < 0.8
-        const itemType = isGoodItem 
-          ? goodItems[Math.floor(Math.random() * goodItems.length)]
-          : badItems[Math.floor(Math.random() * badItems.length)]
+        let itemType: GoodItemType | BadItemType
+        
+        if (isGoodItem) {
+          // Si on peut spawner un ordinateur (après 8s), 10% de chance d'avoir un ordinateur
+          if (canSpawnComputer && Math.random() < 0.1) {
+            itemType = computerItems[0]
+          } else {
+            // Sinon, objet normal parmi les autres
+            itemType = goodItems[Math.floor(Math.random() * goodItems.length)]
+          }
+        } else {
+          itemType = badItems[Math.floor(Math.random() * badItems.length)]
+        }
         
         const entity: Entity = {
           id: Math.random().toString(36),
