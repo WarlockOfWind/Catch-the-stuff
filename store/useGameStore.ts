@@ -241,8 +241,8 @@ export const useGameStore = create<GameState>((set, get) => ({
         let itemType: GoodItemType | BadItemType
         
         if (isGoodItem) {
-          // Si on peut spawner un ordinateur (après 8s), 10% de chance d'avoir un ordinateur
-          if (canSpawnComputer && Math.random() < 0.1) {
+          // Si on peut spawner un ordinateur (après 2s), 25% de chance d'avoir un ordinateur
+          if (canSpawnComputer && Math.random() < 0.25) {
             itemType = computerItems[0]
           } else {
             // Sinon, objet normal parmi les autres
