@@ -392,7 +392,7 @@ export default function GameCanvas() {
       const entityX = entity.x * canvas.width
       const entityY = entity.y * canvas.height
       // Taille des objets ajustée selon l'appareil
-      const sizeMultiplier = deviceType === 'mobile' ? 1.3 : deviceType === 'tablet' ? 1.1 : 1.0
+      const sizeMultiplier = deviceType === 'mobile' ? 1.3 : deviceType === 'tablet' ? 1.1 : 0.85
       const entitySize = entity.size * canvas.width * sizeMultiplier
       
       // Vérifier la collision avec le panier
@@ -436,7 +436,7 @@ export default function GameCanvas() {
       const x = entity.x * canvas.width
       const y = entity.y * canvas.height
       // Taille des objets ajustée selon l'appareil
-      const sizeMultiplier = deviceType === 'mobile' ? 1.3 : deviceType === 'tablet' ? 1.1 : 1.0
+      const sizeMultiplier = deviceType === 'mobile' ? 1.3 : deviceType === 'tablet' ? 1.1 : 0.85
       const size = entity.size * canvas.width * sizeMultiplier
       
       // Sauvegarder le contexte
