@@ -23,7 +23,7 @@ export default function GameCanvas() {
   const [catchAudio, setCatchAudio] = useState<HTMLAudioElement | null>(null)
   const [bombAudio, setBombAudio] = useState<HTMLAudioElement | null>(null)
   
-  const { phase, score, timeLeft, entities, player, update, movePlayer, gameOver, gameOverByBomb, collectEntity, soundEnabled, reduceAnimations, highContrast } = useGameStore()
+  const { phase, score, timeLeft, countdownTime, entities, player, update, movePlayer, gameOver, gameOverByBomb, collectEntity, startPlaying, soundEnabled, reduceAnimations, highContrast } = useGameStore()
 
   // Fonction pour jouer les sons
   const playSound = useCallback((soundType: 'catch' | 'bomb') => {
@@ -323,11 +323,15 @@ export default function GameCanvas() {
     const deltaTime = currentTime - lastTimeRef.current
     lastTimeRef.current = currentTime
 
-    console.log('Game loop - Phase:', phase, 'DeltaTime:', deltaTime)
     update(deltaTime)
 
-    // Pendant le countdown, dessiner seulement le panier
+    // Pendant le countdown, dessiner seulement le panier et attendre que les images soient chargées
     if (phase === 'countdown') {
+      // Passer en playing uniquement quand le décompte est fini ET que les assets sont prêts
+      if (countdownTime <= 0 && imagesLoaded) {
+        startPlaying()
+      }
+
       const canvas = canvasRef.current
       if (canvas) {
         const ctx = canvas.getContext('2d')
@@ -343,16 +347,11 @@ export default function GameCanvas() {
           const basketWidth = basketPos.width
           const basketHeight = basketPos.height
           
-          console.log('Countdown - Device:', deviceType, 'Window:', window.innerWidth, 'x', window.innerHeight)
-          console.log('Countdown - Canvas:', canvas.width, 'x', canvas.height)
-          console.log('Countdown - Player:', player.x, player.y, player.width, player.height)
-          console.log('Countdown - Basket pos (abs):', basketX, basketY, basketWidth, basketHeight)
-          
           // Dessiner le panier avec le SVG
           if (basketImage && imagesLoaded) {
             ctx.drawImage(basketImage, basketX, basketY, basketWidth, basketHeight)
           } else {
-            // Fallback si l'image n'est pas chargée
+            // Fallback si l'image n'est pas chargée (chargement pendant le décompte)
             ctx.fillStyle = '#FF6B35'
             ctx.fillRect(basketX, basketY, basketWidth, basketHeight)
             ctx.strokeStyle = '#FFFFFF'
@@ -364,12 +363,6 @@ export default function GameCanvas() {
             ctx.font = `bold ${fontSize}px Arial`
             ctx.fillText('PANIER', basketX + 5, basketY + basketHeight/2)
           }
-          
-          // Dessiner un point de debug au centre
-          ctx.fillStyle = '#FF0000'
-          ctx.beginPath()
-          ctx.arc(canvas.width/2, canvas.height/2, 5, 0, Math.PI * 2)
-          ctx.fill()
         }
       }
       
@@ -514,10 +507,6 @@ export default function GameCanvas() {
     const basketHeight = basketPos.height
     const basketRotation = basketPos.rotation
     const animationType = basketPos.type
-    
-    console.log('Playing - Device:', deviceType, 'Window:', window.innerWidth, 'x', window.innerHeight)
-    console.log('Playing - Canvas:', canvas.width, 'x', canvas.height)
-    console.log('Playing - Basket pos (abs):', basketX, basketY, basketWidth, basketHeight)
     
     // Sauvegarder le contexte pour la rotation
     ctx.save()
@@ -701,7 +690,7 @@ export default function GameCanvas() {
     if (phase === 'playing') {
       animationRef.current = requestAnimationFrame(gameLoop)
     }
-  }, [phase, score, timeLeft, entities, player, update, images, imagesLoaded, basketImage, deviceType, triggerBasketAnimation, collectEntity, gameOver, getBasketPosition, playSound])
+  }, [phase, score, timeLeft, countdownTime, entities, player, update, startPlaying, images, imagesLoaded, basketImage, deviceType, triggerBasketAnimation, collectEntity, gameOver, getBasketPosition, playSound])
 
   // Démarrer/arrêter la boucle de jeu
   useEffect(() => {

@@ -58,6 +58,7 @@ interface GameState {
   
   // Actions
   start: () => void
+  startPlaying: () => void
   reset: () => void
   update: (deltaTime: number) => void
   movePlayer: (x: number) => void
@@ -92,6 +93,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   start: () => {
     set({
       phase: 'countdown',
+      countdownTime: 3000,
       score: 0,
       timeLeft: 18000,
       entities: [],
@@ -105,6 +107,10 @@ export const useGameStore = create<GameState>((set, get) => ({
       maxCombo: 0,
       gameOverByBomb: false
     })
+  },
+
+  startPlaying: () => {
+    set({ phase: 'playing' })
   },
 
   reset: () => {
@@ -195,18 +201,12 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   update: (deltaTime: number) => {
     const state = get()
-    console.log('Store update - Phase:', state.phase, 'CountdownTime:', state.countdownTime, 'DeltaTime:', deltaTime)
     
-    // Phase countdown
+    // Phase countdown : on décrémente seulement ; le passage en 'playing'
+    // est déclenché par GameCanvas quand les images sont chargées (startPlaying).
     if (state.phase === 'countdown') {
       const newCountdownTime = Math.max(0, state.countdownTime - deltaTime)
-      console.log('Countdown update:', newCountdownTime)
       set({ countdownTime: newCountdownTime })
-      
-      if (newCountdownTime <= 0) {
-        console.log('Countdown finished, switching to playing')
-        set({ phase: 'playing' })
-      }
       return
     }
 
