@@ -44,6 +44,13 @@ export default function HomeScreen() {
             PromptConsulting
           </h1>
           <div className="w-16 h-1 bg-prompt-orange mx-auto mb-4"></div>
+          <button
+            onClick={handleStart}
+            className="btn-primary text-xl px-12 py-4 mb-4 focus:outline-none focus:ring-4 focus:ring-prompt-orange focus:ring-opacity-50"
+            aria-label="Commencer le jeu"
+          >
+            🎮 Jouer
+          </button>
         </div>
 
         {/* Instructions */}
@@ -57,15 +64,6 @@ export default function HomeScreen() {
             Utilisez les flèches du clavier, la souris ou glissez votre doigt
           </p>
         </div>
-
-        {/* Bouton Jouer */}
-        <button
-          onClick={handleStart}
-          className="btn-primary text-xl px-12 py-4 mb-8 focus:outline-none focus:ring-4 focus:ring-prompt-orange focus:ring-opacity-50"
-          aria-label="Commencer le jeu"
-        >
-          🎮 Jouer
-        </button>
 
         {/* Options */}
         <div className="w-full space-y-4 mb-6">
